@@ -15,4 +15,7 @@ const PostSchema = new Schema<Ipost>({
 
 const PostModel =model<Ipost>("Post",PostSchema)
 
+export const createPost = (data:any)=>{
+PostModel.create(data)
+}
 export default PostModel
