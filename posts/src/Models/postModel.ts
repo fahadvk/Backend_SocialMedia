@@ -1,7 +1,8 @@
 import mongoose, { Schema, model, ObjectId } from "mongoose";
 interface Ipost {
   userid: ObjectId;
-  text: string;
+  caption: string;
+  image:string;
   comments: [{ content: string; userId: ObjectId }];
   reactions: [{ type: string; userId: ObjectId }];
   methods:{
@@ -11,7 +12,8 @@ interface Ipost {
 
 const PostSchema = new Schema<Ipost>({
   userid: { type: mongoose.Types.ObjectId },
-  text: { type: String },
+  caption: { type: String },
+  image:{type:String},
   comments: { type: [{ content: String, userId: mongoose.Types.ObjectId }] },
   reactions: { type: [{ type: String, userId: mongoose.Types.ObjectId }] },
   
@@ -22,7 +24,7 @@ PostSchema.methods.createPost = async(data: any) => {
 
 const PostModel = model<Ipost>("Post", PostSchema);
 
-export const createPost = (data: any) => {
-  PostModel.create(data);
+export const createPost = async(data: any) => {
+  await PostModel.create(data).then(()=>{return true}).catch(()=>{return false})
 };
 export default PostModel;
