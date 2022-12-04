@@ -12,28 +12,18 @@ interface IUser {
 }
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema = new Schema<IUser>({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-});
+const userSchema = new Schema<IUser>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true, select: false },
+  },
+  { timestamps: true }
+);
 
 // 3. Create a Model.
 const User = model<IUser>("User", userSchema);
 
-// type data = {
-//   name: string;
-//   mobile: number;
-//   password: string;
-//   email: string;
-// };
-interface response {
-  failed?: boolean;
-  message?: string;
-  _id?: ObjectId;
-  email?: string;
-  name?: string;
-}
 export const createUser = async (data: IUser) => {
   console.log(data);
   const { name, mobile, password, email } = data;
@@ -58,7 +48,7 @@ export const createUser = async (data: IUser) => {
 export const loginuser = async (data: IUser) => {
   try {
     const email = data.email;
-    let user = await User.findOne({ email: email });
+    let user = await User.findOne({ email: email }).select("+password");
     if (user) {
       const response = await comparePass(user.password, data.password);
       const { email, name, _id } = user;
@@ -79,4 +69,3 @@ export const findUser = async (email: string) => {
     return user;
   } catch (error) {}
 };
-
