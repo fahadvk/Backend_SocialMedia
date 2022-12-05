@@ -20,3 +20,7 @@ export const fetchAll = async (req: Request, res: Response) => {
   console.log(response)
   res.status(200).send(response);
 };
+export const addLike =async (req:Request,res:Response) => {
+  
+  
+}

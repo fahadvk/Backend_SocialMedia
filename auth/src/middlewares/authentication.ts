@@ -17,14 +17,16 @@ export const userAuth = (req: Request, res: Response, next: NextFunction) => {
             req.body.user = {};
             req.body.user.id = decoded.id;
             req.body.user.email = decoded.email;
-            let data = await findUser(decoded.email);
+            const data = await findUser(decoded.email);
             if (data) {
               req.body.user.name = data.name;
               return next();
             }
           }
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log(error)
+      }
     } else {
       return res.status(401).send("authencation failed");
     }

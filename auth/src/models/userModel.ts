@@ -30,7 +30,7 @@ export const createUser = async (data: IUser) => {
   try {
     const hashedpassword = await hashPassword(password);
     console.log(hashedpassword);
-    let user = new User({
+    const user = new User({
       name,
       mobile,
       password: hashedpassword,
@@ -48,7 +48,7 @@ export const createUser = async (data: IUser) => {
 export const loginuser = async (data: IUser) => {
   try {
     const email = data.email;
-    let user = await User.findOne({ email: email }).select("+password");
+    const user = await User.findOne({ email: email }).select("+password");
     if (user) {
       const response = await comparePass(user.password, data.password);
       const { email, name, _id } = user;
@@ -65,7 +65,9 @@ export const loginuser = async (data: IUser) => {
 };
 export const findUser = async (email: string) => {
   try {
-    let user = User.findOne({ email: email });
+    const user = User.findOne({ email: email });
     return user;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 };
