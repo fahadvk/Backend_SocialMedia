@@ -1,6 +1,5 @@
 import { Schema, model, connect, ObjectId } from "mongoose";
-import Mongoose from "./mongoConnenction";
-import { hashPassword, comparePass } from "../controller/passwords";
+import { hashPassword, comparePass } from "../Controllers/passwords";
 
 // 1. Create an interface representing a document in MongoDB.
 interface IUser {

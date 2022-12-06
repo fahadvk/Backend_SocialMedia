@@ -1,10 +1,11 @@
-import mongoose, { Schema, model, ObjectId } from "mongoose";
+import mongoose, { Schema, model, ObjectId, isValidObjectId } from "mongoose";
 interface Ipost {
   userid: ObjectId;
   caption: string;
   image: string;
   comments: [{ content: string; userId: ObjectId }];
   reactions: [{ type: string; userId: ObjectId }];
+  likedusers:[]
   methods: {
     createPost: () => {};
   };
@@ -15,8 +16,9 @@ const PostSchema = new Schema<Ipost>(
     userid: { type: mongoose.Types.ObjectId },
     caption: { type: String },
     image: { type: String },
-    comments: { type: [{ content: String, userId: mongoose.Types.ObjectId }] },
-    reactions: { type: [{ type: String, userId: mongoose.Types.ObjectId }] },
+    comments: [{ content: String, userId: mongoose.Types.ObjectId  }],
+    reactions:[{ rtype:{ type: String}, userId: {type:mongoose.Types.ObjectId} }] ,
+    likedusers:[]
   },
   { timestamps: true }
 );
@@ -53,8 +55,14 @@ export const viewAll = async function () {
   ]);
 };
 export const addLike =async (post:ObjectId,user:ObjectId) => {
-  //  await PostModel.find({_id:post{}})
- return  await PostModel.findOneAndUpdate({_id:post},{$addToSet:{userid:user}})
+ const exist =  await PostModel.find({$and:[{_id:post},{ reactions:{rtype:'like',userId:user} }]})
+//  await PostModel.aggregate([{$match:{_Id:post}},{$unwind:{path:'$reactions'}},{$match:{'reactions.$.userid'=}}])
+ console.log(exist,"dslk");
+ console.log(post);
+ const update = {rtype:'like',userId:user}
+//  console.log(await PostModel.findOne({_id:post}));
+//  if(exist.length === 0)  return  await PostModel.findOneAndUpdate({_id:post},{$push:{reactions:update}},{new:true})
+
 }
 
 export default PostModel;

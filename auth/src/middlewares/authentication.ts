@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import { findUser } from "../models/userModel";
+import { findUser } from "../Models/userModel";
 export const userAuth = (req: Request, res: Response, next: NextFunction) => {
   console.log(req.cookies);
   if (req.cookies?.token) {

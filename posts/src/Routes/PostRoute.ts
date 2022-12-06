@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
-import { createPost,fetchAll } from "../Controllers/PostController";
+import { addLike, createPost,fetchAll } from "../Controllers/PostController";
 import { verifyToken } from "../middlewares/authentication";
 const router = Router();
 router.post("/create", verifyToken, createPost);
 router.get('/allPosts',fetchAll)
-router.post('/addLike',)
+router.patch('/addLike',verifyToken,addLike)
 export default router;
