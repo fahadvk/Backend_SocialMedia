@@ -16,7 +16,7 @@ export const createPost = async (req: Request, res: Response) => {
     });
 };
 export const fetchAll = async (req: Request, res: Response) => {
-  const response = await viewAll();
+  const response = await viewAll(req.body.user.id);
   console.log(response)
   res.status(200).send(response);
 };

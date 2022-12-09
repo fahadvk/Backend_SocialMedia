@@ -9,7 +9,6 @@ export const verifyToken = (
   const token = req.cookies.token;
  
   const secret: string | undefined = process.env.JWT_SECRET_KEY;
-  console.log(secret);
   if (secret)
     verify(token, secret, (err: any, decode: any) => {
       if (err) {

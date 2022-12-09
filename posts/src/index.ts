@@ -1,7 +1,7 @@
 import  express  from "express";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
-import {connect} from '../src/Models/mongoconnection'
+import {connect} from './mongoconnection'
 import PostRoute from './Routes/PostRoute'
 import dotenv from 'dotenv'
 dotenv.config()
