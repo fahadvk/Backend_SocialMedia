@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import PostModel, { viewAll } from "../Models/postRepository";
-import { addLike as like } from "../Models/postRepository";
+import PostModel, { viewAll,fethPostsByUser,fetchUserDetails } from "../Models/postRepository";
+import { addLike as like  } from "../Models/postRepository";
 export const createPost = async (req: Request, res: Response) => {
   console.log(req.body, "ldkd");
   const { caption, image } = req.body;
@@ -20,6 +20,8 @@ export const fetchAll = async (req: Request, res: Response) => {
   console.log(response)
   res.status(200).send(response);
 };
+
+
 export const addLike =async (req:Request,res:Response) => {
   console.log(req.body);
   const { id } = req.body.user;
@@ -27,4 +29,12 @@ export const addLike =async (req:Request,res:Response) => {
 const response =  await like(postid,id)
 console.log(response,"res");
 res.status(200).send("success")
+}
+export const UserPosts =async (req:Request,res:Response) => {
+  const response = await fethPostsByUser(req.body.user.id)  
+  res.status(200).send(response)
+}
+export const UserInfo =async (req:Request,res:Response) => {
+  const response = await fetchUserDetails(req.body.user.id)
+  res.status(200).send(response)
 }

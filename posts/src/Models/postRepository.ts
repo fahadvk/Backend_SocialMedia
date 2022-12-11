@@ -111,5 +111,49 @@ export const fetchCommentByPost = async(id:string) =>{
 ])
  
 }
+ export const fethPostsByUser =async (id:string) => {
+ 
+ return await PostModel.aggregate([
+  {
+    $match:{
+      userid:new mongoose.Types.ObjectId(id)
+    }
+  },
+  {
+      '$lookup': {
+        'from': 'users', 
+        'localField': 'userid', 
+        'foreignField': '_id', 
+        'as': 'userid'
+      }
+    }, {
+      '$unwind': {
+        'path': '$userid'
+      }
+    }, {
+      '$project': {
+        'comments': 1, 
+        'createdAt': 1, 
+        'userid.name': 1, 
+        'caption': 1, 
+        'image': 1, 
+        'reactions': 1, 
+        'isliked': {
+          '$in': [
+     new mongoose.Types.ObjectId(id), '$likedusers'
+          ]
+        }
+      }
+    },{
+      '$sort':{
+        'createdAt':-1
+      }
+    }
+  ])
+ }
+export const fetchUserDetails = async(id:string)=>{
+ return PostModel.findById(new mongoose.Types.ObjectId(id))
+}
+
 
 export default PostModel;

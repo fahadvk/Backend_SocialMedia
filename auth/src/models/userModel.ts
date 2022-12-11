@@ -1,4 +1,4 @@
-import { Schema, model, connect, ObjectId } from "mongoose";
+import mongoose, { Schema, model, connect, ObjectId } from "mongoose";
 import { hashPassword, comparePass } from "../Controllers/passwords";
 
 // 1. Create an interface representing a document in MongoDB.
@@ -8,6 +8,17 @@ interface IUser {
   password: string;
   mobile: number;
   _id: ObjectId;
+  followers:[ObjectId],
+  following:[ObjectId],
+  profileImage:string,
+  coverImage:string,
+  Dob:string,
+  gender:string,
+  isGuser:boolean,
+  isVerified:boolean,
+  savedPosts:[ObjectId],
+  about:string
+
 }
 
 // 2. Create a Schema corresponding to the document interface.
@@ -16,6 +27,17 @@ const userSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true, select: false },
+    followers:[{type:mongoose.Types.ObjectId}],
+    following:[{type:mongoose.Types.ObjectId}],
+    coverImage:{type:String},
+    profileImage:{type:String},
+    gender:{type:String},
+    Dob:{type:String},
+    isGuser:{type:Boolean,default:false},
+    isVerified:{type:Boolean,default:false},
+    savedPosts:[{type:mongoose.Types.ObjectId}],
+    about:{type:String}
+
   },
   { timestamps: true }
 );
@@ -28,7 +50,6 @@ export const createUser = async (data: IUser) => {
   const { name, mobile, password, email } = data;
   try {
     const hashedpassword = await hashPassword(password);
-    console.log(hashedpassword);
     const user = new User({
       name,
       mobile,
