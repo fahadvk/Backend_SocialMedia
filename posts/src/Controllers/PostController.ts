@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PostModel, { viewAll,fethPostsByUser,fetchUserDetails } from "../Models/postRepository";
+import PostModel, { viewAll,fethPostsByUser,DeletePost as PostDelete } from "../Models/postRepository";
 import { addLike as like  } from "../Models/postRepository";
 export const createPost = async (req: Request, res: Response) => {
   console.log(req.body, "ldkd");
@@ -34,7 +34,12 @@ export const UserPosts =async (req:Request,res:Response) => {
   const response = await fethPostsByUser(req.body.user.id)  
   res.status(200).send(response)
 }
-export const UserInfo =async (req:Request,res:Response) => {
-  const response = await fetchUserDetails(req.body.user.id)
-  res.status(200).send(response)
+
+export const DeletePost = async (req:Request,res:Response) =>{
+  try {
+   await PostDelete(req.params.id)
+    res.sendStatus(200)
+  } catch (error) {
+    res.sendStatus(402)
+  }
 }

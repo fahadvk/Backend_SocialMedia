@@ -5,6 +5,7 @@ interface Ipost {
   image: string;
   comments: [{ content: string; userId: ObjectId }];
   reactions: [{ type: string; userId: ObjectId }];
+  isDeleted:boolean
   likedusers:[]
   methods: {
     createPost: () => {};
@@ -18,7 +19,8 @@ const PostSchema = new Schema<Ipost>(
     image: { type: String },
     comments: [{ content:{type: String}, userId:{type: mongoose.Types.ObjectId},date:{type:Date,default:new Date()},replies:[{content:{type:String},userId:{type:mongoose.Types.ObjectId},date:{type:Date,default:new Date()}}],likes:[{type:mongoose.Types.ObjectId}] }],
     reactions:[{ rtype:{ type: String}, userId: {type:mongoose.Types.ObjectId} }] ,
-    likedusers:[{type:mongoose.Types.ObjectId}]
+    likedusers:[{type:mongoose.Types.ObjectId}] , 
+    isDeleted:{type:Boolean,default:false}
   },
   { timestamps: true }
 );
@@ -27,6 +29,12 @@ const PostSchema = new Schema<Ipost>(
 const PostModel = model<Ipost>("Post", PostSchema);
 export const viewAll = async function (userid:string) {
   return await PostModel.aggregate([
+{
+ $match:{
+  isDeleted:false
+ }
+},
+
     {
       '$lookup': {
         'from': 'users', 
@@ -43,9 +51,11 @@ export const viewAll = async function (userid:string) {
         'comments': 1, 
         'createdAt': 1, 
         'userid.name': 1, 
+        'userid._id':1,
         'caption': 1, 
         'image': 1, 
         'reactions': 1, 
+         'likedusers':1,
         'isliked': {
           '$in': [
      new mongoose.Types.ObjectId(userid), '$likedusers'
@@ -116,7 +126,8 @@ export const fetchCommentByPost = async(id:string) =>{
  return await PostModel.aggregate([
   {
     $match:{
-      userid:new mongoose.Types.ObjectId(id)
+      userid:new mongoose.Types.ObjectId(id),
+      isDeleted:false
     }
   },
   {
@@ -151,9 +162,12 @@ export const fetchCommentByPost = async(id:string) =>{
     }
   ])
  }
-export const fetchUserDetails = async(id:string)=>{
- return PostModel.findById(new mongoose.Types.ObjectId(id))
-}
+
+
+ export const DeletePost =async (id:string) => {
+   const response = await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{isDeleted:true})
+   console.log(response);
+ }
 
 
 export default PostModel;
