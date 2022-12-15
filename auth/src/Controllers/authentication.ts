@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { createUser, findUser, loginuser } from "../Models/userModel";
+import { changeUserPassword, createUser, findUser, findUserwithPassword, loginuser } from "../Models/userModel";
 import { emailVerification } from "../Utils/SendEmail";
+import { comparePass, hashPassword } from "./passwords";
 
 const SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 const signToken = (id: ObjectId, email: string) => {
@@ -43,3 +44,23 @@ export const login = async (req: Request, res: Response) => {
 export const sendVerify = async (req: Request, res: Response) => {
   return res.send(req.body.user);
 };
+export const UserInfo =async (req:Request,res:Response) => {
+  const response = await findUser(req.body.user.email)
+  console.log(response);
+  res.status(200).send(response)
+}
+export const verifyPassword = async(req:Request,res:Response)=>{
+  const user = await findUserwithPassword(req.body.user.id)
+  if (user)
+  { console.log(req.body.password);
+    const valid = await comparePass(user.password,req.body.password)
+    if(valid) return res.sendStatus(200)
+    res.sendStatus(401)
+  }
+    
+}
+export const changePassword = async (req:Request,res:Response)=>{
+  const hashedpassword:Promise<string|undefined> = hashPassword(req.body.password)
+if(hashedpassword) return await changeUserPassword(hashedpassword,req.body.user.id)
+  
+}

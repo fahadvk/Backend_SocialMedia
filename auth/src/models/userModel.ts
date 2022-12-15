@@ -1,7 +1,6 @@
 import mongoose, { Schema, model, connect, ObjectId } from "mongoose";
 import { hashPassword, comparePass } from "../Controllers/passwords";
 
-// 1. Create an interface representing a document in MongoDB.
 interface IUser {
   name: string;
   email: string;
@@ -91,3 +90,14 @@ export const findUser = async (email: string) => {
     console.log(error)
   }
 };
+export const findUserwithPassword = async(_id:string)=> await User.findById(new mongoose.Types.ObjectId(_id)).select('+password')
+ export const editCover =async (id:string,url:string) => {
+    return await User.findOneAndUpdate({_id:id},{coverImage:url},{new:true})
+ }
+   
+ export const addProfileImage = async (id:string,url:string) => {
+  return await User.findOneAndUpdate({_id:id},{profileImage:url})
+ }
+ export const changeUserPassword = async (password:string,id:string) =>{
+  return await User.findOneAndUpdate({_id:new mongoose.Types.ObjectId(id)},{password})
+ }
