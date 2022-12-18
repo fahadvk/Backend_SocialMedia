@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, connect, ObjectId } from "mongoose";
+import mongoose, { Schema, model, connect, ObjectId, Date } from "mongoose";
 import { hashPassword, comparePass } from "../Controllers/passwords";
 
 interface IUser {
@@ -11,12 +11,13 @@ interface IUser {
   following:[ObjectId],
   profileImage:string,
   coverImage:string,
-  Dob:string,
+  Dob:Date,
   gender:string,
   isGuser:boolean,
   isVerified:boolean,
   savedPosts:[ObjectId],
-  about:string
+  about:string,
+  isDeleted:boolean
 
 }
 
@@ -26,16 +27,18 @@ const userSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true, select: false },
+    mobile:{type:Number,required:true},
     followers:[{type:mongoose.Types.ObjectId}],
     following:[{type:mongoose.Types.ObjectId}],
     coverImage:{type:String},
     profileImage:{type:String},
     gender:{type:String},
-    Dob:{type:String},
+    Dob:{type:Date},
     isGuser:{type:Boolean,default:false},
     isVerified:{type:Boolean,default:false},
     savedPosts:[{type:mongoose.Types.ObjectId}],
-    about:{type:String}
+    about:{type:String},
+    isDeleted:{type:Boolean,default:false}
 
   },
   { timestamps: true }
@@ -67,7 +70,7 @@ export const createUser = async (data: IUser) => {
 export const loginuser = async (data: IUser) => {
   try {
     const email = data.email;
-    const user = await User.findOne({ email: email }).select("+password");
+    const user = await User.findOne({$and:[{ email: email },{isDeleted:false}]}).select("+password");
     if (user) {
       const response = await comparePass(user.password, data.password);
       const { email, name, _id } = user;
@@ -100,4 +103,17 @@ export const findUserwithPassword = async(_id:string)=> await User.findById(new 
  }
  export const changeUserPassword = async (password:string,id:string) =>{
   return await User.findOneAndUpdate({_id:new mongoose.Types.ObjectId(id)},{password})
+ }
+  
+
+ export const updateUserDetails = async(id:string,update:IUser) =>{
+  return await  User.findOneAndUpdate({_id:new mongoose.Types.ObjectId(id)},{$set:update})
+ }
+
+ export const deleteAccount = async(id:string) =>{
+  return await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{isDeleted:true})
+ }
+  
+ export const findUserbyId = async (id:string) =>{
+  return await User.findById(new mongoose.Types.ObjectId(id))
  }

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { changeUserPassword, createUser, findUser, findUserwithPassword, loginuser } from "../Models/userModel";
+import { changeUserPassword, createUser, deleteAccount, findUser, findUserbyId, findUserwithPassword, loginuser, updateUserDetails } from "../Models/userModel";
 import { emailVerification } from "../Utils/SendEmail";
 import { comparePass, hashPassword } from "./passwords";
 
@@ -38,16 +38,17 @@ export const login = async (req: Request, res: Response) => {
   const { _id, email, name } = response;
   if (_id) {
     const token = signToken(_id, email);
-    return res.status(200).json({ token, name });
+    return res.status(200).json({ token, name,_id });
   }
 };
 export const sendVerify = async (req: Request, res: Response) => {
   return res.send(req.body.user);
 };
 export const UserInfo =async (req:Request,res:Response) => {
-  const response = await findUser(req.body.user.email)
-  console.log(response);
-  res.status(200).send(response)
+  // const response = await findUser(req.body.user.email)
+  const response = await findUserbyId(req.params.id)
+  if(!response) return res.sendStatus(404)
+   res.status(200).send(response)
 }
 export const verifyPassword = async(req:Request,res:Response)=>{
   const user = await findUserwithPassword(req.body.user.id)
@@ -60,7 +61,21 @@ export const verifyPassword = async(req:Request,res:Response)=>{
     
 }
 export const changePassword = async (req:Request,res:Response)=>{
-  const hashedpassword:Promise<string|undefined> = hashPassword(req.body.password)
-if(hashedpassword) return await changeUserPassword(hashedpassword,req.body.user.id)
+ hashPassword(req.body.password).then(async(hashedpassword)=>{
+   if(hashedpassword) 
+   { await changeUserPassword(hashedpassword,req.body.user.id)
+    res.status(200).send("password changed")
+   }
+
+  })
   
+}
+export const changeUserInfo = async (req:Request,res:Response) =>{
+  const response = await updateUserDetails(req.body.user.id,req.body.data)
+  res.status(200).send(response)
+}
+
+export const deleteUser = async (req:Request,res:Response) =>{
+  const response = await deleteAccount(req.body.user.id)
+  if(response) return res.status(200).send("deleted success")
 }

@@ -7,9 +7,8 @@ interface Ipost {
   reactions: [{ type: string; userId: ObjectId }];
   isDeleted:boolean
   likedusers:[]
-  methods: {
-    createPost: () => {};
-  };
+  hiddenUsers:[]
+ 
 }
 
 const PostSchema = new Schema<Ipost>(
@@ -20,7 +19,8 @@ const PostSchema = new Schema<Ipost>(
     comments: [{ content:{type: String}, userId:{type: mongoose.Types.ObjectId},date:{type:Date,default:new Date()},replies:[{content:{type:String},userId:{type:mongoose.Types.ObjectId},date:{type:Date,default:new Date()}}],likes:[{type:mongoose.Types.ObjectId}] }],
     reactions:[{ rtype:{ type: String}, userId: {type:mongoose.Types.ObjectId} }] ,
     likedusers:[{type:mongoose.Types.ObjectId}] , 
-    isDeleted:{type:Boolean,default:false}
+    isDeleted:{type:Boolean,default:false},
+    hiddenUsers:[{type:mongoose.Types.ObjectId}]
   },
   { timestamps: true }
 );
@@ -31,7 +31,8 @@ export const viewAll = async function (userid:string) {
   return await PostModel.aggregate([
 {
  $match:{
-  isDeleted:false
+  isDeleted:false,
+  hiddenUsers:{$nin:[new mongoose.Types.ObjectId(userid)]}
  }
 },
 
@@ -168,6 +169,8 @@ export const fetchCommentByPost = async(id:string) =>{
    const response = await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{isDeleted:true})
    console.log(response);
  }
-
+ export const hidePost =async (id:string,userId:string) =>{
+  return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{$addToSet:{hiddenUsers:new mongoose.Types.ObjectId(userId)}})
+ }
 
 export default PostModel;
