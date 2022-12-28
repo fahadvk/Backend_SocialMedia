@@ -1,5 +1,5 @@
 import {Request,Response} from 'express'
-import { addProfileImage, editCover } from '../Models/userModel'
+import { addProfileImage, editCover, FollowUser } from '../Models/userModel'
 
 export const editProfileImage = async(req:Request,res:Response)=>{
  const response = await addProfileImage(req.body.user.id,req.body.imgurl)
@@ -11,4 +11,9 @@ export const editProfileImage = async(req:Request,res:Response)=>{
 console.log(response);
     if(response) return res.status(200).send('success')
     res.sendStatus(402)
+ }
+
+ export const followUser = async(req:Request,res:Response) =>{
+    const response = await FollowUser(req.params.id,req.body.user.id)
+    res.json(response)
  }

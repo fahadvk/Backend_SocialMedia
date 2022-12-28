@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, ObjectId, isValidObjectId, Mongoose } from "mongoose";
+import SavedPost from "./SavedPosts";
 interface Ipost {
   userid: ObjectId;
   caption: string;
@@ -13,7 +14,7 @@ interface Ipost {
 
 const PostSchema = new Schema<Ipost>(
   {
-    userid: { type: mongoose.Types.ObjectId },
+    userid: { type: mongoose.Types.ObjectId,ref:'users' },
     caption: { type: String },
     image: { type: String },
     comments: [{ content:{type: String}, userId:{type: mongoose.Types.ObjectId},date:{type:Date,default:new Date()},replies:[{content:{type:String},userId:{type:mongoose.Types.ObjectId},date:{type:Date,default:new Date()}}],likes:[{type:mongoose.Types.ObjectId}] }],
@@ -28,6 +29,8 @@ const PostSchema = new Schema<Ipost>(
 
 const PostModel = model<Ipost>("Post", PostSchema);
 export const viewAll = async function (userid:string) {
+  const savedPosts = await SavedPost.findOne({userId:userid},'posts userid')
+console.log(savedPosts);
   return await PostModel.aggregate([
 {
  $match:{
@@ -35,7 +38,6 @@ export const viewAll = async function (userid:string) {
   hiddenUsers:{$nin:[new mongoose.Types.ObjectId(userid)]}
  }
 },
-
     {
       '$lookup': {
         'from': 'users', 
@@ -47,7 +49,28 @@ export const viewAll = async function (userid:string) {
       '$unwind': {
         'path': '$userid'
       }
-    }, {
+    },
+    {
+      '$lookup': {
+          'from': 'savedposts', 
+          'localField': 'userid.savedPosts', 
+          'foreignField': '_id', 
+          'as': 'savedposts', 
+          'pipeline': [
+              {
+                  '$project': {
+                      'posts': 1
+                  }
+              }
+          ]
+      }
+},
+{
+  '$unwind': {
+      'path': '$savedposts'
+  }
+},
+    {
       '$project': {
         'comments': 1, 
         'createdAt': 1, 
@@ -59,12 +82,17 @@ export const viewAll = async function (userid:string) {
          'likedusers':1,
         'isliked': {
           '$in': [
-     new mongoose.Types.ObjectId(userid), '$likedusers'
+         new mongoose.Types.ObjectId(userid), '$likedusers'
           ]
-        }
+        },
+        'isSaved': {
+          '$in': [
+              '$_id',savedPosts?.posts
+          ]
+      }
       }
     },{
-      '$sort':{
+      '$sort':{ 
         'createdAt':-1
       }
     }
@@ -78,14 +106,16 @@ const exist = await PostModel.find({$and:[{_id:post},{likedusers:User}]})
 }
 
 
-export  const createComment =async (content:string,postid:ObjectId,userId:string) => {
-
-   const id = new mongoose.Types.ObjectId(userId)
-const comment = {content,userId:id}
+export  const createComment =async (content:string,postid:string,userId:string) => {
+const id = new mongoose.Types.ObjectId(userId)
+const comment = {content,userId:id,date:new Date()}
 try {
-  const response = await PostModel.findOneAndUpdate({_id:postid},{$push:{comments:comment}},{new:true})
-  console.log(response,comment);
+   await PostModel.findOneAndUpdate({_id:postid},{$push:{comments:comment}},{new:true})
+const response = fetchCommentByPost(postid)
+
+  return response
 } catch (error) {
+  return undefined
   console.log(error);
 }
 

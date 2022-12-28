@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete } from "../Models/postRepository";
-import { addLike as like  } from "../Models/postRepository";
+import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete } from "../Models/PostRepository";
+import { addLike as like  } from "../Models/PostRepository";
+import { GetSavedPosts, SavePost } from "../Models/SavedPosts";
 export const createPost = async (req: Request, res: Response) => {
   console.log(req.body, "ldkd");
   const { caption, image } = req.body;
@@ -50,5 +51,23 @@ export const hidePost = async (req:Request,res:Response) =>{
  if(response) return res.sendStatus(200)
   } catch (error) {
     res.sendStatus(500)
+  }
+}
+
+export const savePost = async(req:Request,res:Response) =>{
+  try {
+    const response = await SavePost(req.params.id,req.body.user.id)
+  } catch (error) {
+    
+  }
+}
+
+export const getSaved = async (req:Request,res:Response) =>{
+  try {
+    const response = await GetSavedPosts(req.body.user.id)
+    console.log(response,"ppppp");
+    res.json(response)
+  } catch (error) {
+    res.send(501)
   }
 }
