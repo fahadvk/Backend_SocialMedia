@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, connect, ObjectId, Date } from "mongoose";
+import mongoose, { Schema, model, ObjectId, Date } from "mongoose";
 import { hashPassword, comparePass } from "../Controllers/passwords";
 
 interface IUser {
@@ -17,7 +17,9 @@ interface IUser {
   isVerified:boolean,
   savedPosts:ObjectId,
   about:string,
-  isDeleted:boolean
+  isDeleted:boolean,
+  isAdmin:boolean,
+  isBlocked:boolean
 
 }
 
@@ -38,7 +40,8 @@ const userSchema = new Schema<IUser>(
     isVerified:{type:Boolean,default:false},
     savedPosts:{type:mongoose.Types.ObjectId},
     about:{type:String},
-    isDeleted:{type:Boolean,default:false}
+    isDeleted:{type:Boolean,default:false},
+    isBlocked:{default:false}
 
   },
   { timestamps: true }
@@ -119,7 +122,7 @@ export const findUserwithPassword = async(_id:string)=> await User.findById(new 
  }
 
  export const searchUser =async (data:string,id:string) =>{
-  return await User.find({$and:[{name:{'$regex': new RegExp(data),$options:'si'}},{_id:{$ne: new mongoose.Types.ObjectId(id)}}]})
+  return await User.find({$and:[{isAdmin:{$ne:true}},{name:{'$regex': new RegExp(data),$options:'si'}},{_id:{$ne: new mongoose.Types.ObjectId(id)}}]})
  }
  export const findallUsers =async(id:string)=>{
   // return await User.find({})
@@ -235,4 +238,12 @@ const exist = await User.find({$and:[{_id:new mongoose.Types.ObjectId(userid)},{
  if(user)  following?.push(user?._id)
  const response = await User.find({_id:{$nin:following}},'name about profileImage coverImage ').limit(3)
  return response
+ }
+
+ export const getAllUsers =async () => {
+  try {
+    return await User.find()
+  } catch (error) {
+    return undefined
+  }
  }

@@ -7,7 +7,7 @@ export default function ampqp (){
               if (err0)
               {
               reject(err0)
-              throw err0 
+              // throw err0 
             } 
             else{
               resolve(connection)
@@ -28,7 +28,8 @@ export default function ampqp (){
               // })
           })  
       } catch (error) {
-        console.log(error);
+      
+        console.log(error,"err");
       }
     })
 }

@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, ObjectId, isValidObjectId, Mongoose } from "mongoose";
+import mongoose, { Schema, model, ObjectId, isValidObjectId, Mongoose, Types } from "mongoose";
 import SavedPost from "./SavedPosts";
 interface Ipost {
   userid: ObjectId;
@@ -29,8 +29,9 @@ const PostSchema = new Schema<Ipost>(
 
 const PostModel = model<Ipost>("Post", PostSchema);
 export const viewAll = async function (userid:string) {
-  const savedPosts = await SavedPost.findOne({userId:userid},'posts userid')
-console.log(savedPosts);
+  let savedPosts:any = await SavedPost.findOne({userId:userid},'posts userid')
+  savedPosts = savedPosts ? savedPosts:{posts:[]}
+  console.log(savedPosts);
   return await PostModel.aggregate([
 {
  $match:{
@@ -203,4 +204,45 @@ export const fetchCommentByPost = async(id:string) =>{
   return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{$addToSet:{hiddenUsers:new mongoose.Types.ObjectId(userId)}})
  }
 
+ export const findPostById = async(id:string,userId:string) =>{
+  try {  
+    // return await PostModel.findById(new Types.ObjectId(id))
+    return  await PostModel.aggregate([
+      {
+        $match:{
+         _id:new Types.ObjectId(id),
+          isDeleted:false
+        }
+      },
+      {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'userid', 
+            'foreignField': '_id', 
+            'as': 'userid'
+          }
+        }, {
+          '$unwind': {
+            'path': '$userid'
+          }
+        }, {
+          '$project': {
+            'comments': 1, 
+            'createdAt': 1, 
+            'userid.name': 1, 
+            'caption': 1, 
+            'image': 1, 
+            'reactions': 1, 
+            'isliked': {
+              '$in': [
+         new mongoose.Types.ObjectId(userId), '$likedusers'
+              ]
+            }
+          }
+        }
+      ])
+  } catch (error) {
+    throw error
+  }
+ }
 export default PostModel;

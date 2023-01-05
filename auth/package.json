@@ -19,6 +19,7 @@
     "@types/mongoose": "^5.11.97",
     "amqplib": "^0.10.3",
     "bcrypt": "^5.1.0",
+    "config": "^3.3.8",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.0",
+    "@types/config": "^3.3.0",
     "@types/cors": "^2.8.12",
     "@types/firebase": "^3.2.1",
     "@types/nodemailer": "^6.4.6",

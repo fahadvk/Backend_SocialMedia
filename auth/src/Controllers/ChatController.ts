@@ -3,7 +3,8 @@ import { CreateChat,getChatByUserId,FindChat } from "../Models/ChatModel"
 
 
 export const createChat = async(req:Request,res:Response)=>{
-    const response = await CreateChat(req.body.senderId,req.body.recieverId)
+    console.log(req.body,"body");
+    const response = await CreateChat(req.body.user.id,req.body.recieverId)
     if(response) return res.status(201).send(response)
     res.sendStatus(500)
 }

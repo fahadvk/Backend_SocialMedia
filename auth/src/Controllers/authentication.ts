@@ -3,12 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { changeUserPassword, createUser, deleteAccount, findUser, findUserbyId, findUserwithPassword, loginuser, updateUserDetails } from "../Models/userModel";
+import { changeUserPassword, createUser, deleteAccount, findUser, findUserbyId, findUserwithPassword, loginuser, updateUserDetails } from "../Models/UserModel";
 import { emailVerification } from "../Utils/SendEmail";
 import { comparePass, hashPassword } from "./passwords";
 
 const SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
-const signToken = (id: ObjectId, email: string) => {
+export const signToken = (id: ObjectId, email: string) => {
   if (SECRET_KEY) {
     const token = Jwt.sign({ id, email }, SECRET_KEY, {
       expiresIn: process.env.Jwt_Expiresin,
@@ -79,3 +79,4 @@ export const deleteUser = async (req:Request,res:Response) =>{
   const response = await deleteAccount(req.body.user.id)
   if(response) return res.status(200).send("deleted success")
 }
+

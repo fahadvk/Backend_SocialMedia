@@ -1,4 +1,4 @@
-import { User } from '../Models/userModel';
+import { User } from '../Models/UserModel';
 import connectamqp from './Rabbitmqconf'
 export default async function recieve(){
 connectamqp().then((connection)=>{
@@ -19,6 +19,10 @@ connectamqp().then((connection)=>{
                 },{noAck:true})
                Promise.resolve("success")  
         }
+
     })
+    connection.on( 'error', function(err:any) {
+        console.log('An error occurred' + err);
+      });
 })
 }

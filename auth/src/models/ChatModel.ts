@@ -1,4 +1,5 @@
-import  { Schema, model, Types, ObjectId, Date } from "mongoose";
+import  { Schema, model, Types, ObjectId } from "mongoose";
+import { Imessage } from "./MessageModel";
 interface Ichat{
     Name:string,
     Users:[],
@@ -18,6 +19,9 @@ const ChatModel = model<Ichat>('Chat',ChatSchema)
 
 export const CreateChat = async(sender:string,reciever:string) =>{
   try {
+    const exist = await ChatModel.findOne({Users:{$all:[sender,reciever]}})
+    console.log(exist,"EEEEEEEEEE");
+    if(exist) return exist
     const newChat = new ChatModel({Users:[new Types.ObjectId(sender),new Types.ObjectId(reciever)]})
     return await newChat.save()
   } catch (error) {
@@ -45,9 +49,22 @@ pipeline:[{
     followers:0
   }
 }]
-}},{
+}},
+{
+$lookup:{
+  from:'messages',
+  localField:'LatestMessage',
+  foreignField:'_id',
+  as:'LatestMessage'
+}
+},{
   $unwind:{
     path:'$Users'
+  }
+},
+{
+  $sort:{
+    updatedAt:-1 
   }
 }])
   } catch (error) {
@@ -61,5 +78,13 @@ export const FindChat = async (firstuser:string,seconduser:string) =>{
     return await ChatModel.findOne({Users:{$all:[new Types.ObjectId(firstuser),new Types.ObjectId(seconduser)]}})
   } catch (error) {
     return undefined
+  }
+}
+
+export const Updatelastmsg =async (chat:Imessage) => {
+  try {
+    return await ChatModel.findOneAndUpdate({_id:chat.Chat},{LatestMessage:chat._id})
+  } catch (error) {
+    console.log(error);
   }
 }

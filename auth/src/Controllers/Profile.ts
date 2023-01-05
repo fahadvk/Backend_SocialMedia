@@ -1,5 +1,5 @@
 import {Request,Response} from 'express'
-import { addProfileImage, editCover, FollowUser } from '../Models/userModel'
+import { addProfileImage, editCover, FollowUser } from '../Models/UserModel'
 
 export const editProfileImage = async(req:Request,res:Response)=>{
  const response = await addProfileImage(req.body.user.id,req.body.imgurl)

@@ -1,5 +1,5 @@
 import  {Request,Response} from 'express'
-import { findallUsers, followedUsersList, followingUsersList, GetSuggestedUsers, SavePost, searchUser } from '../Models/userModel'
+import { findallUsers, followedUsersList, followingUsersList, GetSuggestedUsers, SavePost, searchUser } from '../Models/UserModel'
 
 export const SearchUser = async (req:Request,res:Response) =>{
     const response = await searchUser(req.params.search,req.body.user.id)

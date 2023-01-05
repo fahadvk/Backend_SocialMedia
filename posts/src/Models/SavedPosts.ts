@@ -13,6 +13,7 @@ import { savePostsendtoqueue } from "../utils/Send";
   const SavedPost = model<IsavedPost>('SavedPosts',SavedPostSchema)
 
 export const SavePost = async(postid:string,userId:string) =>{
+  try {
   const exist = await SavedPost.findOne({$and:[{userId:userId},{posts:postid}]})
   console.log(exist);
   if(exist)  return await SavedPost.findOneAndUpdate({userId:new mongoose.Types.ObjectId(userId)},{$pull:{posts:postid}})
@@ -23,6 +24,12 @@ export const SavePost = async(postid:string,userId:string) =>{
    const model = await SavedPost.create({userId,posts:[postid]})
    console.log(model);
     savePostsendtoqueue(model)
+    return model
+ } 
+ return res
+
+} catch (error) {
+    console.log(error);
  }
 
 }

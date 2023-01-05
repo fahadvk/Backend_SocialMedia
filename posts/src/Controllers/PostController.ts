@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete } from "../Models/PostRepository";
+import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete, findPostById } from "../Models/PostRepository";
 import { addLike as like  } from "../Models/PostRepository";
 import { GetSavedPosts, SavePost } from "../Models/SavedPosts";
 export const createPost = async (req: Request, res: Response) => {
@@ -32,6 +32,7 @@ console.log(response,"res");
 res.status(200).send("success")
 }
 export const UserPosts =async (req:Request,res:Response) => {
+  console.log(req.params.id);
   const response = await fethPostsByUser(req.params.id)  
   res.status(200).send(response)
 }
@@ -57,8 +58,9 @@ export const hidePost = async (req:Request,res:Response) =>{
 export const savePost = async(req:Request,res:Response) =>{
   try {
     const response = await SavePost(req.params.id,req.body.user.id)
+    return res.json(response)
   } catch (error) {
-    
+    res.sendStatus(500)
   }
 }
 
@@ -69,5 +71,15 @@ export const getSaved = async (req:Request,res:Response) =>{
     res.json(response)
   } catch (error) {
     res.send(501)
+  }
+}
+
+export const getSinglePost =async (req:Request,res:Response) => {
+  try {
+    const response = await findPostById(req.params.postid,req.body.user.id)
+    console.log(response);
+    res.json(response)
+  } catch (error) {
+    res.sendStatus(500)
   }
 }

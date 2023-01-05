@@ -11,7 +11,7 @@ const WEBSOCKET_CORS = {
     constructor(httpServer:any) {
         super(httpServer, {
             cors: WEBSOCKET_CORS
-        });
+        })
     }
 
     public static getInstance(httpServer:any): Websocket {
