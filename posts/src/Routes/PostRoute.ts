@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { addComment,fetchCommentsbyPostId } from "../Controllers/CommentController";
-import { addLike, createPost,fetchAll,UserPosts,DeletePost, hidePost, savePost, getSaved, getSinglePost } from "../Controllers/PostController";
+import { addLike, createPost,fetchAll,UserPosts,DeletePost, hidePost, savePost, getSaved, getSinglePost, ReportPost } from "../Controllers/PostController";
 import { verifyToken } from "../middlewares/authentication";
 const router = Router();
 router.post("/create", verifyToken, createPost);
@@ -14,4 +14,6 @@ router.patch('/hidePost/:id',verifyToken,hidePost)
 router.patch('/savepost/:id',verifyToken,savePost)
 router.get('/getSavedPosts',verifyToken,getSaved)
 router.get('/:postid',verifyToken,getSinglePost)
+router.patch('/reportPost/:id',verifyToken,ReportPost)
+router.get('/reported',)
 export default router;

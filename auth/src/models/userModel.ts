@@ -41,7 +41,7 @@ const userSchema = new Schema<IUser>(
     savedPosts:{type:mongoose.Types.ObjectId},
     about:{type:String},
     isDeleted:{type:Boolean,default:false},
-    isBlocked:{default:false}
+    isBlocked:{type:Boolean, default:false}
 
   },
   { timestamps: true }
@@ -240,10 +240,11 @@ const exist = await User.find({$and:[{_id:new mongoose.Types.ObjectId(userid)},{
  return response
  }
 
- export const getAllUsers =async () => {
+ export const getAllUsers =async (page:number,itemperPage:number) => {
   try {
-    return await User.find()
+    return await User.find().skip((page-1) * itemperPage).limit(itemperPage)
   } catch (error) {
+    console.log(error);
     return undefined
   }
  }

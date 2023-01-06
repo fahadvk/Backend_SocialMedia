@@ -5,10 +5,10 @@ interface Ipost {
   caption: string;
   image: string;
   comments: [{ content: string; userId: ObjectId }];
-  reactions: [{ type: string; userId: ObjectId }];
   isDeleted:boolean
   likedusers:[]
   hiddenUsers:[]
+  reportedUsers:[]
  
 }
 
@@ -18,7 +18,7 @@ const PostSchema = new Schema<Ipost>(
     caption: { type: String },
     image: { type: String },
     comments: [{ content:{type: String}, userId:{type: mongoose.Types.ObjectId},date:{type:Date,default:new Date()},replies:[{content:{type:String},userId:{type:mongoose.Types.ObjectId},date:{type:Date,default:new Date()}}],likes:[{type:mongoose.Types.ObjectId}] }],
-    reactions:[{ rtype:{ type: String}, userId: {type:mongoose.Types.ObjectId} }] ,
+    reportedUsers:[{ type:mongoose.Types.ObjectId} ] ,
     likedusers:[{type:mongoose.Types.ObjectId}] , 
     isDeleted:{type:Boolean,default:false},
     hiddenUsers:[{type:mongoose.Types.ObjectId}]
@@ -105,7 +105,7 @@ const exist = await PostModel.find({$and:[{_id:post},{likedusers:User}]})
  if(exist.length === 0)  return  await PostModel.findOneAndUpdate({_id:post},{$push:{likedusers:user}},{new:true})
  return await PostModel.findOneAndUpdate({_id:post},{$pull:{likedusers:User}})
 }
-
+ 
 
 export  const createComment =async (content:string,postid:string,userId:string) => {
 const id = new mongoose.Types.ObjectId(userId)
@@ -201,7 +201,11 @@ export const fetchCommentByPost = async(id:string) =>{
    console.log(response);
  }
  export const hidePost =async (id:string,userId:string) =>{
-  return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{$addToSet:{hiddenUsers:new mongoose.Types.ObjectId(userId)}})
+  try {
+       return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{$addToSet:{hiddenUsers:new mongoose.Types.ObjectId(userId)}})
+  } catch (error) {
+    console.log(error);
+  }
  }
 
  export const findPostById = async(id:string,userId:string) =>{
@@ -245,4 +249,12 @@ export const fetchCommentByPost = async(id:string) =>{
     throw error
   }
  }
+ export const reportPost = async(id:string,userId:string)=>{
+  try {
+    return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{$addToSet:{reportedUsers:userId}})
+  } catch (error) {
+     return null  
+  }
+ }
+
 export default PostModel;

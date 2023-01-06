@@ -33,9 +33,16 @@ export const adminLogin =async (req:Request,res:Response) => {
 }
 
 export const fetchUserDetails =async (req:Request,res:Response) => {
-    const Users = await getAllUsers() 
-    res.status(200).send(Users)
-    
+    const page  =req.query.page
+    const item_perPage = 5
+   const TotalUsers =await User.find().countDocuments()
+   if( typeof page === 'string' ) {
+    {
+    const Users = await getAllUsers(parseInt(page),item_perPage) 
+    console.log(Users);
+    res.status(200).json({Users,TotalUsers})
+   }   
+}
 }
 export const sendAdminVerify =async (req:Request,res:Response) => {
     const isValid = await adminModel.findById(req.body.user.id)
@@ -45,14 +52,14 @@ export const sendAdminVerify =async (req:Request,res:Response) => {
 
 export const BlockUser = async(req:Request,res:Response)=>{
     const {userId} = req.body
-    // const response = await User.findByIdAndUpdate(new Types.ObjectId(userId),{})
+   // const response = await User.findByIdAndUpdate(new Types.ObjectId(userId),{})
     const user = await User.findById(userId)
-    console.log(user,"blooo");
+    console.log(user?.isBlocked,"blooo",);
     if(user)
     {
      user.isBlocked = !user.isBlocked
     await user.save()
-    res.status(200).send('success')
+    res.status(200).send(user)
     }
     
 }

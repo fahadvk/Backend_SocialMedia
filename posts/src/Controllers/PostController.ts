@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete, findPostById } from "../Models/PostRepository";
+import PostModel, { hidePost as Hide, viewAll,fethPostsByUser,DeletePost as PostDelete, findPostById, reportPost } from "../Models/PostRepository";
 import { addLike as like  } from "../Models/PostRepository";
 import { GetSavedPosts, SavePost } from "../Models/SavedPosts";
 export const createPost = async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const createPost = async (req: Request, res: Response) => {
 };
 export const fetchAll = async (req: Request, res: Response) => {
   const response = await viewAll(req.body.user.id);
-  console.log(response)
+  console.log(response.length,"posst ")
   res.status(200).send(response);
 };
 
@@ -82,4 +82,14 @@ export const getSinglePost =async (req:Request,res:Response) => {
   } catch (error) {
     res.sendStatus(500)
   }
+}
+
+export const ReportPost = async (req:Request,res:Response)=>{
+   
+  const response = await reportPost(req.params.id,req.body.user.id)
+  if(response) 
+  {    const hide = await Hide(req.params.id,req.body.user.id)
+    if(hide) return res.status(200).send('success')
+  }
+  return res.status(501).send('error')
 }
