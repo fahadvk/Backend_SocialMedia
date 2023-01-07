@@ -41,11 +41,11 @@ export const adminAuth = (req:Request,res:Response,next:NextFunction)=>{
   verify(Admintoken,secret,(err:any,decoded:any)=>{
    if(err)
    {
-    return res.sendStatus(401)
+    return res.clearCookie('Admintoken',{path:'/'}).status(401).send(err)
    }
    else{
     console.log(decoded);
-    if(!isValidObjectId(decoded.id)) return res.sendStatus(401)
+    if(!isValidObjectId(decoded.id)) return res.status(401).clearCookie('Admintoken',{path:'/'})
     req.body.user ={}
     req.body.user.id = decoded.id
     next()

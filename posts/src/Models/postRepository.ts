@@ -153,8 +153,7 @@ export const fetchCommentByPost = async(id:string) =>{
 ])
  
 }
- export const fethPostsByUser =async (id:string) => {
- 
+ export const fethPostsByUser =async (id:string) => { 
  return await PostModel.aggregate([
   {
     $match:{
@@ -197,8 +196,12 @@ export const fetchCommentByPost = async(id:string) =>{
 
 
  export const DeletePost =async (id:string) => {
-   const response = await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{isDeleted:true})
-   console.log(response);
+  try {
+       return await PostModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id),{isDeleted:true})
+  } catch (error) {
+     console.log(error); 
+  }
+  
  }
  export const hidePost =async (id:string,userId:string) =>{
   try {

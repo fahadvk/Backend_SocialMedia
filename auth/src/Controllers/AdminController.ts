@@ -24,7 +24,7 @@ export const adminLogin =async (req:Request,res:Response) => {
      if(checkPassword) 
      {
       const token =  signToken(valid?._id,valid.UserName)
-      res.cookie('Admintoken',token)
+      res.cookie('Admintoken',token,{path:'/'})
       return res.send('success')
      }
    } 

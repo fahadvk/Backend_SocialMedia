@@ -39,8 +39,8 @@ export const UserPosts =async (req:Request,res:Response) => {
 
 export const DeletePost = async (req:Request,res:Response) =>{
   try {
-   await PostDelete(req.params.id)
-    res.sendStatus(200)
+   const response = await PostDelete(req.params.id)
+    res.status(200).send(response)
   } catch (error) {
     res.sendStatus(402)
   }
@@ -92,4 +92,15 @@ export const ReportPost = async (req:Request,res:Response)=>{
     if(hide) return res.status(200).send('success')
   }
   return res.status(501).send('error')
+}
+
+export const getReported = async(req:Request,res:Response)=>{
+  try {
+    //  const response = await PostModel.find({reportedUsers:{ $exists: true, $ne: [] } }).populate('userid')
+    const response = await PostModel.aggregate([{$match:{reportedUsers:{ $exists: true, $ne: [] },isDeleted:false}},{$lookup:{from:'users',localField:'userid',foreignField:'_id',as:'userid',pipeline:[{$project:{'name':1}}]}}])
+     res.status(200).send(response)
+  } catch (error) {
+     console.log(error);
+  }
+ 
 }

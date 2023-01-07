@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from 'cors'
 import {connect} from './mongoconnection'
 import PostRoute from './Routes/PostRoute'
+import AdminRoute from './Routes/AdminRoute'
 import connectamqp from './utils/Rabbitmqconf'
 import dotenv from 'dotenv'
 import Websocket from "./WebSockets/Websockets";
@@ -15,6 +16,7 @@ app.use(cors({credentials:true,origin:process.env.Origin_Url}))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/',PostRoute)
+app.use('/admin',AdminRoute)
 
 const port =process.env.PORT || 4001 
  let io

@@ -75,6 +75,7 @@ export const loginuser = async (data: IUser) => {
     const email = data.email;
     const user = await User.findOne({$and:[{ email: email },{isDeleted:false}]}).select("+password");
     if (user) {
+      if(user.isBlocked) return {failed:true,message:'user is blocked by admin'}
       const response = await comparePass(user.password, data.password);
       const { email, name, _id } = user;
       if (response) return { email, _id, name };
