@@ -8,7 +8,6 @@ import config from 'config';
 import userRoute from './routes/userRoues'
 import chatRoute from './routes/chatRoute'
 import adminRoute from './routes/AdminRoute'
-
 import messageRoute from './routes/MessageRoutes'
 import * as dotenv from 'dotenv'
 import Mongoose from "./mongoConnenction";
