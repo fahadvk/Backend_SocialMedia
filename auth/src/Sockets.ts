@@ -29,11 +29,9 @@ let ActiveUsers : any [] = []
 
       }
     })
-    console.log(ActiveUsers)
   socket.emit('get-users',ActiveUsers)
 
   socket.on('send-message',(data)=>{
-    console.log(data,"___________________________________________");
     const {recieverId} = data
     const user =ActiveUsers.find((user)=>user.userId === recieverId)
     if(user) io.to(user.socketId).emit('recieve-message',data)

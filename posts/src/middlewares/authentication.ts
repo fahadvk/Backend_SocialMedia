@@ -8,7 +8,7 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.token; 
   if (secret)
     verify(token, secret, (err: any, decode: any) => {
       if (err) {

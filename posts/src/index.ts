@@ -11,8 +11,9 @@ import { Socket } from "socket.io";
 
 dotenv.config()
 connect()
+const origin =['https://audiozone.site' ,'http://localhost:5173']
 const app = express()
-app.use(cors({credentials:true,origin:process.env.Origin_Url}))
+app.use(cors({credentials:true,origin:origin}))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/',PostRoute)

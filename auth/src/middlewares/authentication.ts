@@ -1,11 +1,11 @@
   import { Request, Response, NextFunction } from "express";
-import { verify ,VerifyErrors} from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 import { findUser } from "../Models/UserModel";
 const secret: string | undefined = process.env.JWT_SECRET_KEY;
 export const userAuth = (req: Request, res: Response, next: NextFunction) => {
-  if (req.cookies?.token) {
-    const token: string = req.cookies.token;
+  const token: string = req.cookies.token ||  req.headers.token;
+  if (token) {
     if (secret) {
       try {
         verify(token, secret, async (err: any, decoded: any) => {
