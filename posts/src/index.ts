@@ -12,11 +12,9 @@ import Websocket from "./WebSockets/Websockets";
 
 dotenv.config()
 const corsOrigin = config.get<string>("Origin_Url")
-console.log(corsOrigin);
 connect()
-const origin =['https://audiozone.site' ,'http://localhost:5173']
 const app = express()
-app.use(cors({credentials:true,origin:origin})) 
+app.use(cors({credentials:true,origin:corsOrigin})) 
 app.use(express.json())
 app.use(cookieParser())
 app.use('/',PostRoute)
