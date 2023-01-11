@@ -1,5 +1,6 @@
 import mongoose, { Schema, model, ObjectId, isValidObjectId, Mongoose, Types } from "mongoose";
 import SavedPost from "./SavedPosts";
+import UserModel from "./UserModel";
 interface Ipost {
   userid: ObjectId;
   caption: string;
@@ -27,8 +28,13 @@ const PostSchema = new Schema<Ipost>(
 );
 
 
+
+
 const PostModel = model<Ipost>("Post", PostSchema);
 export const viewAll = async function (userid:string) {
+  const user = await UserModel.findById(userid,'following')
+    const following = user?.following
+    console.log(following);
   let savedPosts:any = await SavedPost.findOne({userId:userid},'posts userid')
   savedPosts = savedPosts ? savedPosts:{posts:[]}
   console.log(savedPosts);
@@ -36,11 +42,12 @@ export const viewAll = async function (userid:string) {
 {
  $match:{
   isDeleted:false,
-  hiddenUsers:{$nin:[new mongoose.Types.ObjectId(userid)]}
+  hiddenUsers:{$nin:[new mongoose.Types.ObjectId(userid)]},
+  $or:[{userid:new Types.ObjectId(userid)},{userid:{$in:following}}]
  }
 },
     {
-      '$lookup': {
+      '$lookup': { 
         'from': 'users', 
         'localField': 'userid', 
         'foreignField': '_id', 
@@ -76,6 +83,7 @@ export const viewAll = async function (userid:string) {
         'comments': 1, 
         'createdAt': 1, 
         'userid.name': 1, 
+        'userid.profileImage':1,
         'userid._id':1,
         'caption': 1, 
         'image': 1, 
