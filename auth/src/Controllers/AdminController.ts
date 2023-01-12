@@ -25,7 +25,7 @@ export const adminLogin =async (req:Request,res:Response) => {
      {
       const token =  signToken(valid?._id,valid.UserName)
       res.cookie('Admintoken',token,{path:'/'})
-      return res.send('success')
+      return res.send(token)
      }
    } 
    return res.sendStatus(401)
