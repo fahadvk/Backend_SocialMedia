@@ -35,7 +35,7 @@ export const userAuth = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const adminAuth = (req:Request,res:Response,next:NextFunction)=>{
- const Admintoken= req.cookies.Admintoken || req.headers.Admintoken
+ const Admintoken=  req.headers.Admintoken || req.cookies.Admintoken 
  if(secret)
  {
   verify(Admintoken,secret,(err:any,decoded:any)=>{

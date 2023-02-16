@@ -143,7 +143,8 @@ export const fetchCommentByPost = async(id:string) =>{
        "as":'username',
        "pipeline":[{
   $project:{
-    name:1
+    name:1,
+    profileImage:1
   }
       }]
 }},
